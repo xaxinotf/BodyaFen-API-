@@ -84,17 +84,42 @@ namespace BodyaFen_API_.Controllers
         // POST: api/Songs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Song>> PostSong(Song song)
+        public async Task<IActionResult> PostSong([FromBody] Song song)
         {
-          if (_context.Songs == null)
-          {
-              return Problem("Entity set 'BodyaFenDbContext.Songs'  is null.");
-          }
+            // Check if the ModelState is valid
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Check if song object is null
+            if (song == null)
+            {
+                return BadRequest("The song object cannot be null.");
+            }
+
             _context.Songs.Add(song);
+
+            if (song.Artist != null)
+            {
+                var existingArtist = await _context.Artists
+                    .FirstOrDefaultAsync(a => a.Name == song.Artist.Name);
+                song.Artist = existingArtist ?? _context.Artists.Add(song.Artist).Entity;
+            }
+
+            if (song.Genre != null)
+            {
+                var existingGenre = await _context.Genres
+                    .FirstOrDefaultAsync(g => g.Name == song.Genre.Name);
+                song.Genre = existingGenre ?? _context.Genres.Add(song.Genre).Entity;
+            }
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSong", new { id = song.Id }, song);
+            return CreatedAtAction(nameof(GetSong), new { id = song.Id }, song);
         }
+
+
 
         // DELETE: api/Songs/5
         [HttpDelete("{id}")]
