@@ -83,40 +83,42 @@ namespace BodyaFen_API_.Controllers
 
         // POST: api/Songs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [HttpPost]
-        public async Task<IActionResult> PostSong([FromBody] Song song)
+        public async Task<ActionResult<SongDto>> Create(SongCreationDto songCreationDto)
         {
-            // Check if the ModelState is valid
-            if (!ModelState.IsValid)
+            if (songCreationDto == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest();
             }
 
-            // Check if song object is null
-            if (song == null)
+            var artist = await _context.Artists.FindAsync(songCreationDto.ArtistId);
+            var genre = await _context.Genres.FindAsync(songCreationDto.GenreId);
+
+            if (artist == null || genre == null)
             {
-                return BadRequest("The song object cannot be null.");
+                return NotFound("Artist or Genre not found");
             }
+
+            var song = new Song
+            {
+                Name = songCreationDto.Name,
+                Artist = artist,
+                Genre = genre
+            };
 
             _context.Songs.Add(song);
-
-            if (song.Artist != null)
-            {
-                var existingArtist = await _context.Artists
-                    .FirstOrDefaultAsync(a => a.Name == song.Artist.Name);
-                song.Artist = existingArtist ?? _context.Artists.Add(song.Artist).Entity;
-            }
-
-            if (song.Genre != null)
-            {
-                var existingGenre = await _context.Genres
-                    .FirstOrDefaultAsync(g => g.Name == song.Genre.Name);
-                song.Genre = existingGenre ?? _context.Genres.Add(song.Genre).Entity;
-            }
-
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSong), new { id = song.Id }, song);
+            var songDto = new SongDto
+            {
+                Id = song.Id,
+                Name = song.Name,
+                ArtistName = artist.Name,
+                GenreName = genre.Name
+            };
+
+            return CreatedAtAction(nameof(GetSong), new { id = songDto.Id }, songDto);
         }
 
 

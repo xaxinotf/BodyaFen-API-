@@ -1,0 +1,36 @@
+{
+	"info": {
+		"_postman_id": "93df445b-0d58-4d7a-a0f5-5298b9c6fff1",
+		"name": "etap6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30144462"
+	},
+	"item": [
+		{
+			"name": "getSongs",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "PostSogs",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"Example Song\",\r\n    \"Artist\": null\r\n    ,\r\n    \"Genre\": null\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://localhost:7288/api/Songs"
+			},
+			"response": []
+		}
+	]
+}
