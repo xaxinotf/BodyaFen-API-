@@ -1,0 +1,68 @@
+﻿@model BodyaFen_API_.Models.BonkModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    /* Table Styling */
+    .rainbow-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        margin: 20px 0;
+    }
+
+        .rainbow-table th, .rainbow-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid black;
+        }
+
+        .rainbow-table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Rainbow Gradient Background for Rows */
+        .rainbow-table tbody tr:nth-child(odd) {
+            background: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .rainbow-table tbody tr:nth-child(even) {
+            background: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+</style>
+
+Date: @Model.Date
+
+<table class="rainbow-table">
+    <thead>
+        <tr>
+            <th>Base Currency</th>
+            <th>Currency</th>
+            <th>Sale Rate NB</th>
+            <th>Purchase Rate NB</th>
+            <th>Sale Rate</th>
+            <th>Purchase Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rate in Model.ExchangeRate!)
+        {
+            <tr>
+                <td>@rate.BaseCurrency</td>
+                <td>@rate.Currency</td>
+                <td>@rate.SaleRateNb</td>
+                <td>@rate.PurchaseRateNb</td>
+                <td>@rate.SaleRate</td>
+                <td>@rate.PurchaseRate</td>
+            </tr>
+        }
+    </tbody>
+</table>

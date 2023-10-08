@@ -1,9 +1,13 @@
+using BodyaFen_API_;
 using BodyaFen_API_.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpClient("Privat24");
+builder.Services.AddScoped<BonkRequester>();
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -24,6 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+app.UseRouting();
 app.UseDefaultFiles();
 
 app.UseHttpsRedirection();
