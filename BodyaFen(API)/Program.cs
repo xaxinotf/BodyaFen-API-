@@ -1,8 +1,18 @@
 using BodyaFen_API_;
 using BodyaFen_API_.Contexts;
+using BodyaFen_API_.Models;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers().AddOData(opts => opts.AddRouteComponents("odata", GetEdmModel())
+    .Count().Filter().OrderBy().Expand().Select().SetMaxTop(100)
+);
+
+
 
 // Add services to the container.
 builder.Services.AddHttpClient("Privat24");
@@ -33,8 +43,16 @@ app.UseDefaultFiles();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+IEdmModel GetEdmModel()
+{
+    var edmBuilder = new ODataConventionModelBuilder();
+    edmBuilder.EntitySet<Song>("Songs");
+    return edmBuilder.GetEdmModel();
+}

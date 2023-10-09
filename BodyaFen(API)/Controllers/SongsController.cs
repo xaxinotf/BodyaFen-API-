@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BodyaFen_API_.Contexts;
 using BodyaFen_API_.Models;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace BodyaFen_API_.Controllers
 {
@@ -19,6 +20,13 @@ namespace BodyaFen_API_.Controllers
         public SongsController(BodyaFenDbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("odata/Songs")]
+        [EnableQuery]
+        public IActionResult GetSongsOData()
+        {
+            return Ok(_context.Songs);
         }
 
         // GET: api/Songs
