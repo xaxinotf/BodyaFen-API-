@@ -2,6 +2,7 @@ using BodyaFen_API_;
 using BodyaFen_API_.Contexts;
 using BodyaFen_API_.Dopomoga;
 using BodyaFen_API_.Models;
+using BodyaFen_API_.RabbitMQ;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -22,7 +23,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient("Privat24");
 builder.Services.AddScoped<BonkRequester>();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

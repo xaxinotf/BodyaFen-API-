@@ -9,6 +9,7 @@ using BodyaFen_API_.Contexts;
 using BodyaFen_API_.Models;
 using BodyaFen_API_.Dopomoga;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using BodyaFen_API_.RabbitMQ;
 
 namespace BodyaFen_API_.Controllers
 {
@@ -16,14 +17,16 @@ namespace BodyaFen_API_.Controllers
     [ApiController]
     public class GenresController : ControllerBase
     {
+        private readonly IRabitMQProducer _rabitMQProducer;
         private readonly BodyaFenDbContext _context;
         private readonly Interface inter;
 
 
-        public GenresController(BodyaFenDbContext context, Interface inter)
+        public GenresController(BodyaFenDbContext context, Interface inter, IRabitMQProducer rabitMQProducer = null)
         {
             _context = context;
             this.inter = inter;
+            _rabitMQProducer = rabitMQProducer;
         }
 
         // GET: api/Genres
@@ -31,10 +34,10 @@ namespace BodyaFen_API_.Controllers
         public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
         {
             var genres = inter.GetGenres();
-          if (genres == null)
-          {
-              return NotFound();
-          }
+            if (genres == null)
+            {
+                return NotFound();
+            }
             return genres;
         }
 
@@ -42,10 +45,10 @@ namespace BodyaFen_API_.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Genre>> GetGenre(int id)
         {
-          if (_context.Genres == null)
-          {
-              return NotFound();
-          }
+            if (_context.Genres == null)
+            {
+                return NotFound();
+            }
             var genre = await _context.Genres.FindAsync(id);
 
             if (genre == null)
@@ -93,14 +96,17 @@ namespace BodyaFen_API_.Controllers
         [HttpPost]
         public async Task<ActionResult<Genre>> PostGenre(Genre genre)
         {
-          if (_context.Genres == null)
-          {
-              return Problem("Entity set 'BodyaFenDbContext.Genres'  is null.");
-          }
+            if (_context.Genres == null)
+            {
+                return Problem("Entity set 'BodyaFenDbContext.Genres'  is null.");
+            }
             _context.Genres.Add(genre);
             await _context.SaveChangesAsync();
+            _rabitMQProducer.SendMessage(genre);
             inter.AddGenre(genre.Id);
+
             return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
+
         }
 
         // DELETE: api/Genres/5
