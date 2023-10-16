@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BodyaFen_API_.Contexts;
 using BodyaFen_API_.Models;
+using BodyaFen_API_.Dopomoga;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BodyaFen_API_.Controllers
 {
@@ -15,21 +17,25 @@ namespace BodyaFen_API_.Controllers
     public class GenresController : ControllerBase
     {
         private readonly BodyaFenDbContext _context;
+        private readonly Interface inter;
 
-        public GenresController(BodyaFenDbContext context)
+
+        public GenresController(BodyaFenDbContext context, Interface inter)
         {
             _context = context;
+            this.inter = inter;
         }
 
         // GET: api/Genres
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Genre>>> GetGenres()
         {
-          if (_context.Genres == null)
+            var genres = inter.GetGenres();
+          if (genres == null)
           {
               return NotFound();
           }
-            return await _context.Genres.ToListAsync();
+            return genres;
         }
 
         // GET: api/Genres/5
@@ -65,6 +71,7 @@ namespace BodyaFen_API_.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                inter.UpdateGenre(id);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,7 +99,7 @@ namespace BodyaFen_API_.Controllers
           }
             _context.Genres.Add(genre);
             await _context.SaveChangesAsync();
-
+            inter.AddGenre(genre.Id);
             return CreatedAtAction("GetGenre", new { id = genre.Id }, genre);
         }
 
@@ -109,10 +116,10 @@ namespace BodyaFen_API_.Controllers
             {
                 return NotFound();
             }
-
+            var genreid = genre.Id;
             _context.Genres.Remove(genre);
             await _context.SaveChangesAsync();
-
+            //inter.DeleteGenre(genreid); //try it out
             return NoContent();
         }
 

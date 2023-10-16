@@ -1,5 +1,6 @@
 using BodyaFen_API_;
 using BodyaFen_API_.Contexts;
+using BodyaFen_API_.Dopomoga;
 using BodyaFen_API_.Models;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,9 @@ builder.Services.AddControllers().AddOData(opts => opts.AddRouteComponents("odat
 );
 
 
+//builder.Services.AddScoped<GenreService>();
+builder.Services.AddScoped<Interface, GenreService>();
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
 builder.Services.AddHttpClient("Privat24");
@@ -49,6 +53,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 
 IEdmModel GetEdmModel()
 {
